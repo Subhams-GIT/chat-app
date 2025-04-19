@@ -2,9 +2,8 @@ import express, { Request, Response } from "express";
 import { DbConnect } from "../db";
 import prisma from "../db";
 
-const router = express.Router();
 
-export default router.post("/adduser",async (req:Request,res:Response)=>{
+export default async (req:Request,res:Response)=>{
   await DbConnect();
     if(!req.session.user){
         res.json({
@@ -12,7 +11,7 @@ export default router.post("/adduser",async (req:Request,res:Response)=>{
             message:"user not found"
         })
     }
-    const username=req.query.name
+    const username=req.body.name
     try {
         const userToBeAdded=await prisma.user.findFirst({
             where:{
@@ -86,4 +85,4 @@ export default router.post("/adduser",async (req:Request,res:Response)=>{
           });
     }
     return 
-})
+}

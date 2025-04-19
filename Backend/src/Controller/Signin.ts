@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import { DbConnect } from "../db";
 import prisma from "../db";
 import jwt from "jsonwebtoken";
@@ -6,9 +6,9 @@ import dotenv from "dotenv";
 import bcrypt from "bcryptjs";
 
 dotenv.config();
-const router = express.Router();
 
-export default router.post("/signin", async (req, res) => {
+
+export default async (req:Request, res:Response) :Promise<void>=> {
   await DbConnect();
   const { password, email } = req.body;
 
@@ -57,10 +57,10 @@ export default router.post("/signin", async (req, res) => {
     );
     req.session.user = {
       id: user.id.toString(),
-      username: user.displayName || "",
+      username: user.displayName || "Guest",
       email: user.email,
     };
     
   }
   return;
-});
+}
