@@ -3,19 +3,25 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" 
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
   id           Int           @id @default(autoincrement())
   email        String        @unique
-  password     String 
-  verifyCode    Int           @default(0)
+  password     String
   displayName  String?
-  createdAt    DateTime?      @default(now())
-  participants Participant[]  
-  messages     Message[]   
+  createdAt    DateTime?     @default(now())
+  verifyCode   Int           @default(0)
+  messages     Message[]
+  participants Participant[]
+  profileImage String?
+  verified Boolean  @default(false)
+  @@index([displayName])
+  @@index([id])
+  @@index([email])
+
 }
 
 model Conversation {
@@ -23,27 +29,27 @@ model Conversation {
   name         String?
   isGroup      Boolean       @default(false)
   createdAt    DateTime      @default(now())
-  participants Participant[]
   messages     Message[]
+  participants Participant[]
 }
 
 model Participant {
-  id             Int           @id @default(autoincrement())
-  user           User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             Int          @id @default(autoincrement())
   userId         Int
-  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   conversationId Int
-  joinedAt       DateTime      @default(now())
+  joinedAt       DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, conversationId])
 }
 
-model Message {                                                                                                                                                                       
-  id             Int           @id @default(autoincrement())
-  conversation   Conversation  @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+model Message {
+  id             Int          @id @default(autoincrement())
   conversationId Int
-  sender         User          @relation(fields: [senderId], references: [id], onDelete: Cascade)
   senderId       Int
   content        String
-  sentAt         DateTime      @default(now())
+  sentAt         DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
 }

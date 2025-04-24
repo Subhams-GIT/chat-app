@@ -12,11 +12,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
 const db_1 = require("../db");
 const db_2 = __importDefault(require("../db"));
-const router = express_1.default.Router();
-exports.default = router.post("/adduser", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.default = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b;
     yield (0, db_1.DbConnect)();
     if (!req.session.user) {
@@ -25,7 +23,7 @@ exports.default = router.post("/adduser", (req, res) => __awaiter(void 0, void 0
             message: "user not found"
         });
     }
-    const username = req.query.name;
+    const username = req.body.name;
     try {
         const userToBeAdded = yield db_2.default.user.findFirst({
             where: {
@@ -98,4 +96,4 @@ exports.default = router.post("/adduser", (req, res) => __awaiter(void 0, void 0
         });
     }
     return;
-}));
+});

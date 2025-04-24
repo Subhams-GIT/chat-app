@@ -12,15 +12,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
 const db_1 = require("../db");
 const db_2 = __importDefault(require("../db"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 dotenv_1.default.config();
-const router = express_1.default.Router();
-exports.default = router.post("/signin", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+exports.default = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, db_1.DbConnect)();
     const { password, email } = req.body;
     const user = yield db_2.default.user.findUnique({
@@ -62,9 +60,9 @@ exports.default = router.post("/signin", (req, res) => __awaiter(void 0, void 0,
         });
         req.session.user = {
             id: user.id.toString(),
-            username: user.displayName || "",
+            username: user.displayName || "Guest",
             email: user.email,
         };
     }
     return;
-}));
+});

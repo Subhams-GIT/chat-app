@@ -5,20 +5,23 @@ import bcrypt from "bcryptjs";
 import z from "zod";
 import "dotenv/config";
 import { Resend } from "resend";
+import Usernames from "../Usernames.json";
 
 const resend = new Resend(process.env.RESEND_KEY);
 export default async (req: Request, res: Response): Promise<void> => {
   await DbConnect();
   const { username, password, email } = req.body;
+
   const signUpScehma = z.object({
-    username: z.string().max(8).min(4),
+    username: z.string().max(20).min(4),
     email: z.string().email(),
     password: z
       .string()
-      .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
       .min(8),
   });
+ 
   const status = signUpScehma.safeParse(req.body);
+   console.log(status)
   if (!status.success) {
     res.status(400).json({
       success: false,
@@ -48,7 +51,12 @@ export default async (req: Request, res: Response): Promise<void> => {
           verifyCode: code,
         },
       });
+      const idx = Usernames.usernames.findIndex((u) => u === username);
 
+      if (idx !== -1) {
+        // Remove exactly that one element
+        Usernames.usernames.splice(idx, 1);
+      }
       const { data, error } = await resend.emails.send({
         from: "Acme <onboarding@resend.dev>",
         to: ["subhamkumardas4444@gmail.com"],

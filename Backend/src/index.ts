@@ -3,14 +3,24 @@ import express from "express";
 import session from "express-session";
 import Signup from "./Routes/Signup";
 import middleware from "./middleware";
-import Signin from "./Routes/Sigin";
+import Signin from "./Routes/Signin";
 import cookieparser from "cookie-parser";
 import AddUser from "./Routes/AddUser";
 import http from "http";
 import { WebSocketServer } from "ws";
-import { handleChat } from "./Ws/handlechat";
-import wsMiddleware from "./wsMiddleware";
+import cors from 'cors'
 import rateLimit from "express-rate-limit";
+import cloudinary from 'cloudinary'
+import fileupload from 'express-fileupload'
+import upload from "./Routes/upload";
+
+cloudinary.v2.config({
+    cloud_name: process.env.NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+    secure: true,
+});
+
 const app = express();
 const server = http.createServer(app);
 export const wss = new WebSocketServer({ server });
@@ -20,6 +30,11 @@ const limiter = rateLimit({
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 })
+app.use(fileupload())
+app.use(cors({
+  origin:'http://localhost:5173',
+  credentials:true
+}))
 app.use(cookieparser());
 app.use(
   session({
@@ -39,13 +54,10 @@ app.use("/user/v1", Signup);
 app.use("/user/v1", Signin);
 app.use(middleware);
 app.use("/user/v1", AddUser);
+app.use("/user/v1", upload);
 
-wss.on("connection", (ws, request) => {
-  wsMiddleware(ws, request, () => {
-    handleChat(ws, request);
-  });
-});
 
-server.listen(PORT, () => {
+
+app.listen(PORT, () => {
   console.log(`Server listening on http://localhost:${PORT}`);
 });

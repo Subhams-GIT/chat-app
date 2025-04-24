@@ -59,6 +59,7 @@ export default async (req:Request, res:Response) :Promise<void>=> {
       id: user.id.toString(),
       username: user.displayName || "Guest",
       email: user.email,
+      verifycode:user.verifyCode
     };
     
   }
