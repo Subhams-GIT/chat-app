@@ -8,7 +8,7 @@ export interface Signup{
 export const signupSchema=z.object(
     {
         email:z.string().email(),
-        username:z.string().max(18).min(4),
+        username:z?.string().max(18).min(4),
         Password:z.string().min(8)
     }
 )

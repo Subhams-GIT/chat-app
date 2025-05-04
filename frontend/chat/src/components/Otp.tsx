@@ -9,11 +9,14 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import api from "@/lib/axios";
+import { useNavigate, useParams } from "react-router";
 
 const Otp = () => {
+  const username=useParams()
   const [otp, setotp] = useState<number[]>(Array(5).fill(""));
   console.log(otp);
-
+  const nav=useNavigate()
   const handleSlotChange=(val:number,index:number)=>{
     setotp(prev => {
       const next = [...prev]
@@ -22,6 +25,16 @@ const Otp = () => {
     })
   }
 
+
+  const onSubmit=async ()=>{
+    const res=await api.post(`/verify/${username}`,{
+      otp,
+    })
+    if(res.status==200)
+    {
+      nav('/dashboard')
+    }
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-900 via-slate-900 to-gray-900 px-4">
       <Card className="w-full max-w-sm shadow-xl rounded-2xl backdrop-blur border border-white/10 bg-white/5 text-white">

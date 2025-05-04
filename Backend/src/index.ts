@@ -13,6 +13,7 @@ import rateLimit from "express-rate-limit";
 import cloudinary from 'cloudinary'
 import fileupload from 'express-fileupload'
 import upload from "./Routes/upload";
+import Verify from "./Routes/Verify";
 
 cloudinary.v2.config({
     cloud_name: process.env.NAME,
@@ -50,12 +51,13 @@ app.use(express.json());
 
 app.use("/user/v1/signup",limiter)
 app.use("/user/v1/signin",limiter)
+app.use("/user/v1/verify", limiter);
 app.use("/user/v1", Signup);
 app.use("/user/v1", Signin);
 app.use(middleware);
 app.use("/user/v1", AddUser);
 app.use("/user/v1", upload);
-
+app.use("/user/v1", Verify);
 
 
 app.listen(PORT, () => {

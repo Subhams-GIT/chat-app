@@ -32,12 +32,20 @@ exports.default = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             message: "create your account first",
         });
     }
+    if (!(user === null || user === void 0 ? void 0 : user.verified)) {
+        res.json({
+            success: false,
+            message: "verify yourself first",
+        });
+        return;
+    }
     if (user) {
         if (!(yield bcryptjs_1.default.compare(password, user.password))) {
             res.json({
                 success: false,
                 message: "wrong Password",
             });
+            return;
         }
         jsonwebtoken_1.default.sign(user, process.env.SECRET_KEY, (error, encoded) => {
             if (error) {
@@ -55,14 +63,10 @@ exports.default = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                     .json({
                     success: true,
                     message: "Signed in successfully",
+                    user: user.verified && user
                 });
             }
         });
-        req.session.user = {
-            id: user.id.toString(),
-            username: user.displayName || "Guest",
-            email: user.email,
-        };
     }
     return;
 });

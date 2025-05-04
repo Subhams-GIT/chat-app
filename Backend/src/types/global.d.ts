@@ -9,7 +9,9 @@ declare module "express-session" {
       id: string;
       username: string;
       email: string;
-      verifycode:Number
+      verifycode:Number;
+      Verified:boolean
+
     };
   }
 }

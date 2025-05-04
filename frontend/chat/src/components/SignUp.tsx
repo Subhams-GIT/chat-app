@@ -1,53 +1,72 @@
-'use client'
-import getUsername from '../../../../Common/SuggestUsername'
-import { useState } from "react"
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Label } from "@/components/ui/label"
-import { motion } from "framer-motion"
-import { signupSchema } from '@/Schemas/SignupSchema'
-import SignupUser from '@/Functions/Signup'
-import { useNavigate } from 'react-router'
+"use client";
+import getUsername from "../../../../Common/SuggestUsername";
+import { useState } from "react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { motion } from "framer-motion";
+import { signupSchema } from "@/Schemas/SignupSchema";
+import SignupUser from "@/Functions/Signup";
+import { useNavigate } from "react-router-dom";
+import api from "@/lib/axios";
 
 export default function AuthPage() {
-  const [username, setUsername] = useState("")
-  const [email, setEmail] = useState("")
-  const [Password, setPassword] = useState("")
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [Password, setPassword] = useState("");
+  const [currentTab, setCurrentTab] = useState("");
+  const nav = useNavigate();
 
-  const nav = useNavigate()
-
-  // Use React.FormEvent and correct field name (password lowercase)
   const onHandleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
     const result = signupSchema.safeParse({
       username,
       email,
       Password,
-    })
+    });
 
     if (!result.success) {
-      alert("Please ensure all details are correct")
-      return
+      alert("Please ensure all details are correct");
+      return;
     }
 
     try {
-      const resStatus = await SignupUser({ username, email, Password })
+      const resStatus = await SignupUser({ username, email, Password });
       if (resStatus === 200) {
-        nav('/otp')
+        nav(`/otp/${username}`);
       }
     } catch (err) {
-      console.error(err)
-      alert("Signup failed. Please try again.")
+      console.error(err);
+      alert("Signup failed. Please try again.");
     }
-  }
+  };
 
   const handleSuggestUsername = () => {
-    const suggestion = getUsername()
-    setUsername(suggestion)
-  }
+    const suggestion = getUsername();
+    setUsername(suggestion);
+  };
+
+  const signin = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      const res = await api.post("/signin", {
+        email,
+        password: Password,
+      });
+      console.log(res);
+      if (res.data.user) {
+        nav("/dashboard");
+      } else {
+        nav("/otp");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Sign in failed.");
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-indigo-900 via-slate-900 to-gray-900 px-4">
@@ -59,16 +78,25 @@ export default function AuthPage() {
       >
         <Card className="bg-white/10 backdrop-blur-sm border border-white/10 shadow-xl rounded-2xl">
           <CardContent className="p-8">
-            <h1 className="text-white text-3xl font-semibold text-center mb-6">Welcome Back 👋</h1>
+            <h1 className="text-white text-3xl font-semibold text-center mb-6">
+              Welcome Back{" "}
+            </h1>
             <Tabs defaultValue="signin" className="w-full">
               <TabsList className="grid grid-cols-2 bg-slate-800 text-white rounded-md mb-6 gap-10">
-                <TabsTrigger value="signin">Sign In</TabsTrigger>
-                <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                <TabsTrigger
+                  value="signin"
+                  onClick={() => setCurrentTab("signin")}
+                >
+                  Sign In
+                </TabsTrigger>
+                <TabsTrigger value="signup" disabled={currentTab === "signin"}>
+                  Sign Up
+                </TabsTrigger>
               </TabsList>
 
               {/* Sign In */}
               <TabsContent value="signin">
-                <form className="space-y-5" onSubmit={onHandleSubmit}>
+                <form className="space-y-5" onSubmit={signin}>
                   <div>
                     <Label className="text-white">Email</Label>
                     <Input
@@ -91,7 +119,10 @@ export default function AuthPage() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white mt-2">
+                  <Button
+                    type="submit"
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white mt-2"
+                  >
                     Sign In
                   </Button>
                 </form>
@@ -142,7 +173,11 @@ export default function AuthPage() {
                       required
                     />
                   </div>
-                  <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white mt-2">
+                  <Button
+                    type="submit"
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white mt-2"
+                    disabled={currentTab === "signin"}
+                  >
                     Sign Up
                   </Button>
                 </form>
@@ -152,5 +187,5 @@ export default function AuthPage() {
         </Card>
       </motion.div>
     </div>
-  )
+  );
 }

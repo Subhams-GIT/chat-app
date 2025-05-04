@@ -24,13 +24,23 @@ export default async (req:Request, res:Response) :Promise<void>=> {
       message: "create your account first",
     });
   }
+  if(!user?.verified)
+  {
+    res.json({
+        success: false,
+        message: "verify yourself first",
+      });
+      return ;
+  }
   if (user) {
     if (!(await bcrypt.compare(password, user.password))) {
       res.json({
         success: false,
         message: "wrong Password",
       });
+      return 
     }
+    
     jwt.sign(
       user ,
       process.env.SECRET_KEY as string,
@@ -49,18 +59,14 @@ export default async (req:Request, res:Response) :Promise<void>=> {
             .json({
               success: true,
               message: "Signed in successfully",
+              user:user.verified&&user
             });
           
         }
         
       }
     );
-    req.session.user = {
-      id: user.id.toString(),
-      username: user.displayName || "Guest",
-      email: user.email,
-      verifycode:user.verifyCode
-    };
+    
     
   }
   return;
