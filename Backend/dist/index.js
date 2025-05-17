@@ -20,6 +20,8 @@ const cloudinary_1 = __importDefault(require("cloudinary"));
 const express_fileupload_1 = __importDefault(require("express-fileupload"));
 const upload_1 = __importDefault(require("./Routes/upload"));
 const Verify_1 = __importDefault(require("./Routes/Verify"));
+const getChats_1 = __importDefault(require("./Routes/getChats"));
+const GetUser_1 = __importDefault(require("./Routes/GetUser"));
 cloudinary_1.default.v2.config({
     cloud_name: process.env.NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -52,12 +54,15 @@ app.use(express_1.default.json());
 app.use("/user/v1/signup", limiter);
 app.use("/user/v1/signin", limiter);
 app.use("/user/v1/verify", limiter);
+app.use("/user/v1/session", limiter);
 app.use("/user/v1", Signup_1.default);
 app.use("/user/v1", Signin_1.default);
 app.use(middleware_1.default);
+app.use('/user/v1', GetUser_1.default);
 app.use("/user/v1", AddUser_1.default);
 app.use("/user/v1", upload_1.default);
 app.use("/user/v1", Verify_1.default);
+app.use('/user/v1', getChats_1.default);
 app.listen(PORT, () => {
     console.log(`Server listening on http://localhost:${PORT}`);
 });

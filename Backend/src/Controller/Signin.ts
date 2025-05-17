@@ -51,9 +51,10 @@ export default async (req:Request, res:Response) :Promise<void>=> {
           console.log('token',encoded)
           res
             .cookie("token", encoded, {
-              httpOnly: false,
+              httpOnly: true,
               secure: process.env.NODE_ENV === "production",
               sameSite: "lax",
+              maxAge: 7 * 24 * 60 * 60 * 1000
             })
             .status(200)
             .json({

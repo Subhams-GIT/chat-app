@@ -11,7 +11,7 @@ function wsMiddleware(ws, request, next) {
     const authToken = cookies.token || cookies.Authorization;
     const sessionId = cookies['connect.sid'] || cookies.Authorization;
     console.log(cookies);
-    if (!cookies || !authToken || !sessionId) {
+    if (!cookies || !authToken) {
         ws.close();
         return;
     }

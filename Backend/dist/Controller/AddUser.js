@@ -62,6 +62,7 @@ exports.default = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         else {
             const conversation = yield db_2.default.conversation.create({
                 data: {
+                    name: username,
                     isGroup: false,
                     participants: {
                         create: [

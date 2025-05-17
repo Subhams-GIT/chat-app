@@ -52,6 +52,7 @@ export default async (req:Request,res:Response)=>{
         else{
           const conversation= await prisma.conversation.create({
             data:{
+              name:username,
                 isGroup:false,
                 participants:{
                     create:[

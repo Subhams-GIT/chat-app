@@ -6,6 +6,17 @@ import AuthForm from "./components/SignUp.tsx";
 import {  createBrowserRouter, RouterProvider } from "react-router-dom";
 import Otp from "./components/Otp.tsx";
 import Dashboard from "./components/Dashboard.tsx";
+import { Provider } from "react-redux";
+import { store } from "./store/store.ts";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 const router = createBrowserRouter([
   {
@@ -27,6 +38,13 @@ const router = createBrowserRouter([
 ]);
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+       <Provider store={store}>
     <RouterProvider router={router} />
+ </Provider></QueryClientProvider>
+   
   </React.StrictMode>
+ 
+  
+ 
 );

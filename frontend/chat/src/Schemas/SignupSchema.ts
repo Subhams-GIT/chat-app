@@ -5,6 +5,12 @@ export interface Signup{
     email:string,
     Password:string
 }
+
+export  type user={
+    name:string,
+    email:string,
+    
+}
 export const signupSchema=z.object(
     {
         email:z.string().email(),

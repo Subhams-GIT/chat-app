@@ -1,27 +1,26 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import dotenv from "dotenv";
+import User from "./types/global";
 dotenv.config();
 
-export default async function middleware(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+const middleware = ( req: Request,res: Response,next: NextFunction) => {
   const token = req.cookies.token;
-  if (!token) res.status(401).json({ message: "Unauthorized" });
+
+  if (!token) {
+    return new Error("unauthorised");
+  }
+
   try {
-    jwt.verify(
-      token,
-      process.env.SECRET_KEY as string,
-      (err: Error | null, decoded: any) => {
-        if (err) res.status(403).json({ message: "Token invalid" });
-        req.session.user = req.session.user ?? decoded;
-        next();
-      }
-    );
-    
-  } catch (error) {
-    console.log(error);
+    const decoded = jwt.verify(token, process.env.SECRET_KEY as string) as User;
+
+    req.session.user = req.session.user ?? decoded;
+    next()
+
+  } catch (err) {
+    console.error("JWT verification failed:", err);
+    return res.status(403).json({ message: "Invalid token" });
   }
 }
+
+export default middleware

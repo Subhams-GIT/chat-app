@@ -11,12 +11,15 @@ import { signupSchema } from "@/Schemas/SignupSchema";
 import SignupUser from "@/Functions/Signup";
 import { useNavigate } from "react-router-dom";
 import api from "@/lib/axios";
-
+import { useDispatch} from "react-redux"
+import { setUser } from "@/Context/AuthContext";
 export default function AuthPage() {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [Password, setPassword] = useState("");
-  const [currentTab, setCurrentTab] = useState("");
+  const [username, setUsername] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [Password, setPassword] = useState<string>("");
+  const [currentTab, setCurrentTab] = useState<string>("");
+  const [error,seterror]=useState<Error|null>(null)
+  const dispatch=useDispatch()
   const nav = useNavigate();
 
   const onHandleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -56,11 +59,15 @@ export default function AuthPage() {
         email,
         password: Password,
       });
-      console.log(res);
-      if (res.data.user) {
-        nav("/dashboard");
-      } else {
-        nav("/otp");
+    
+      switch (res.data.message) {
+        case "Signed in successfully":
+          dispatch(setUser(res.data.user))
+          nav("/dashboard");
+          break;
+        default:
+          seterror(new Error(res.data.message))
+          break;
       }
     } catch (err) {
       console.error(err);
@@ -181,6 +188,7 @@ export default function AuthPage() {
                     Sign Up
                   </Button>
                 </form>
+                {error?.message}
               </TabsContent>
             </Tabs>
           </CardContent>
