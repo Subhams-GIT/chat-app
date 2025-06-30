@@ -3,15 +3,14 @@ import { DbConnect } from "../db";
 import prisma from "../db";
 
 type User= {
-
 	id: number ,
-	displayName: string,
+	displayName: string|null,
 	email: string,
-	profileImage: string,
+	profileImage: string|null,
 }
 export default async function (req:Request,res:Response) {
 	await DbConnect();
-	const user=await prisma.user.findFirst(
+	const user: User | null = await prisma.user.findFirst(
 		{
 			where:{
 				id:Number(req.session.user?.id)
@@ -19,7 +18,8 @@ export default async function (req:Request,res:Response) {
 			select:{
 				id:true,
 				email:true,
-				displayName:true
+				displayName:true,
+				profileImage:true
 			}
 		}
 	)
@@ -30,6 +30,7 @@ export default async function (req:Request,res:Response) {
 			msg:"use not found"
 		})
 	}
+	console.log(user)
 	res.json({
 		user
 	})

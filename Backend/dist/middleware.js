@@ -10,7 +10,8 @@ const middleware = (req, res, next) => {
     var _a;
     const token = req.cookies.token;
     if (!token) {
-        return new Error("unauthorised");
+        res.status(401).json({ message: "Unauthorized" });
+        return;
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.SECRET_KEY);
@@ -19,7 +20,7 @@ const middleware = (req, res, next) => {
     }
     catch (err) {
         console.error("JWT verification failed:", err);
-        return res.status(403).json({ message: "Invalid token" });
+        res.status(403).json({ message: "Invalid token" }); // No return!
     }
 };
 exports.default = middleware;

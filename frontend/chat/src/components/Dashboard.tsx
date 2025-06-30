@@ -1,27 +1,36 @@
 import { useDispatch } from "react-redux";
-import { useEffect } from "react";
-import { useMutation } from "@tanstack/react-query";
-import { LoaderCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 
+import { LoaderCircle } from "lucide-react";
+import Chats from "./chats";
 import Navbar from "./Layout/Navbar";
 import GetUser from "@/Functions/GetUser";
-import { setUser } from "@/Context/AuthContext";
+import { setchats, setUser } from "@/Context/AuthContext";
+import GetChats from "@/Functions/GetChats";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-
-  const mutation = useMutation({
-    mutationFn: GetUser,
-    onSuccess: (res) => {
-      dispatch(setUser(res.data.user));
-    },
-  });
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
-    mutation.mutate();
-  }, []); // run once on mount
+    
+    const fetchData = async () => {
+      try {
+        const userRes = await GetUser();
+        dispatch(setUser(userRes.user))
+         const chatsRes = await GetChats();
+         console.log(chatsRes ,'chats')
+         dispatch(setchats(chatsRes.data));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false); 
+      }
+    };
 
-  if (mutation.isPending) {
+    fetchData();
+  }, [dispatch]);
+  if (loading) {
     return (
       <div className="flex h-screen w-screen justify-center items-center font-bold animate-spin text-black">
         <LoaderCircle />
@@ -32,7 +41,7 @@ const Dashboard = () => {
   return (
     <div>
       <Navbar />
-      <div className="text-white text-xl p-4">Dashboard content here</div>
+      <Chats/>
     </div>
   );
 };

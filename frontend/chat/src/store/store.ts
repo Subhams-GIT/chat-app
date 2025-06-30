@@ -1,9 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
-import ChatSlice from '../Context/AuthContext'
-export const  store=configureStore({
-	reducer:{
-		ChatSlice
-	}
+import Authreducers from '../Context/AuthContext'
+import { chatreducers } from '../Context/AuthContext'
+export const store = configureStore({
+	reducer: {
+		Authreducers,
+		chatreducers
+	},
+	devTools: process.env.NODE_ENV !== 'production'
 })
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>

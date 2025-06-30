@@ -1,0 +1,13 @@
+version: '3'
+services:
+  backend:
+    build: .
+    command: node dist/index.js
+    ports:
+      - "3000:3000"
+  ws:
+    build: .
+    command: node dist/Ws/index.js
+    ports:
+      - "8080:8080"
+

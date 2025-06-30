@@ -1,44 +1,59 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction } from "@reduxjs/toolkit";
+import { ActivityIcon } from "lucide-react";
 
+export type AuthState = {
+	id: number | null,
+	displayName: string,
+	email: string,
+	profileImage: string,
 
-export type AuthState={
-	user:{
-		id:number|null,
-		displayName:string,
-		email:string,
-		profileImage:string,
-	}
+}
+export type message = {
+	id: number,
+	conversationid: number,
+	senderId: number,
+	content: string
+}
+export type participant = {
+	userId: number,
+	conversationId: number
+}
+export type chat = {
+	conversationid: number,
+	name: string,
+	messages: message[],
+	participants: participant[]
+}
+const initialState: AuthState = {
+	id:null,
+	displayName:"",
+	profileImage:"",
+	email:""
 }
 
-const initialState:AuthState={
-	user:{
-		id:null,
-		displayName:"",
-		email:"",
-		profileImage:""
-	}
-}
-
-const chatState={
-	
-}
-const authSlice=createSlice({
-	name:"auth",
+const initialChatState: chat[] = []
+const authSlice = createSlice({
+	name: "auth",
 	initialState,
-	reducers:{
-		setUser:(state,actiom)=>{
-			state.user.id=actiom.payload.id
-			state.user.displayName=actiom.payload.displayName
-			state.user.email=actiom.payload.email
-			state.user.profileImage=actiom.payload.profileImage
-		},
-		logOut:(state,action)=>{
-			state.user.id=null
-			state.user.displayName=""
-			state.user.email=""
-			state.user.profileImage=""
+	reducers: {
+		setUser: (state, action: PayloadAction<AuthState>) => {
+			return  action.payload;
+			
 		}
 	}
-})
-export const {setUser,logOut}=authSlice.actions
+});
+
+const chatSlice = createSlice({
+	name: "chats",
+	initialState: initialChatState,
+	reducers: {
+		setchats: (state, action: PayloadAction<chat[]>) => {
+			return action.payload; // Replace state with new chats array
+		}
+	}
+});
+export const { setUser } = authSlice.actions
+export const { setchats } = chatSlice.actions
+export const chatreducers = chatSlice.reducer
 export default authSlice.reducer

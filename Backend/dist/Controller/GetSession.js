@@ -26,7 +26,8 @@ function default_1(req, res) {
             select: {
                 id: true,
                 email: true,
-                displayName: true
+                displayName: true,
+                profileImage: true
             }
         });
         if (!user) {
@@ -35,6 +36,7 @@ function default_1(req, res) {
                 msg: "use not found"
             });
         }
+        console.log(user);
         res.json({
             user
         });
