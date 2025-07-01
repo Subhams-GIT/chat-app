@@ -41,7 +41,6 @@ model Participant {
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, conversationId])
 }
 
 model Message {

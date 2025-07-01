@@ -17,63 +17,43 @@ exports.default = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const userid = (_a = req.session.user) === null || _a === void 0 ? void 0 : _a.id;
     try {
-        const user = yield db_1.default.user.findFirst({
-            where: {
-                id: Number(userid)
-            }
-        });
-        const conversation = yield db_1.default.conversation.findMany({
+        const conversations = yield db_1.default.conversation.findMany({
             where: {
                 participants: {
-                    some: {
-                        userId: Number(userid)
-                    }
-                }
+                    some: { userId: Number(userid) },
+                },
             },
             include: {
                 participants: {
                     include: {
-                        user: {
-                            select: {
-                                id: true,
-                                displayName: true,
-                                profileImage: true
-                            }
-                        }
+                        user: true
                     }
                 },
                 messages: {
-                    orderBy: {
-                        sentAt: 'desc'
-                    },
-                    take: 1
+                    orderBy: { sentAt: 'desc' }
                 }
-            }
+            },
         });
-        const friendIds = conversation
-            .flatMap(c => c.participants
-            .filter(p => p.userId !== Number(userid))
-            .map(p => p.userId));
-        console.log('friends Ids', friendIds);
-        let names = [];
-        friendIds.map(f => {
-            db_1.default.user.findFirst({
-                where: {
-                    id: f
-                }
-            }).then(data => {
-                names.push(data === null || data === void 0 ? void 0 : data.displayName);
-                return data === null || data === void 0 ? void 0 : data.displayName;
+        const chats = conversations.map(convo => {
+            var _a;
+            const friend = (_a = convo.participants.find(p => p.userId !== Number(userid))) === null || _a === void 0 ? void 0 : _a.user;
+            const messages = convo.messages.map(msg => {
+                var _a;
+                const sender = (_a = convo.participants.find(p => p.userId === msg.senderId)) === null || _a === void 0 ? void 0 : _a.user;
+                return {
+                    content: msg.content,
+                    sentAt: msg.sentAt,
+                    senderId: msg.senderId,
+                    senderName: (sender === null || sender === void 0 ? void 0 : sender.displayName) || 'Unknown',
+                };
             });
-            console.log('names', names);
+            return {
+                friend,
+                messages,
+            };
         });
-        const msgs = conversation.map(c => {
-            c.messages.some(m => m.senderId && m.content);
-        });
-        console.log(msgs);
-        // const chats=await prisma.p
         res.json({
-            conversation
+            chats
         });
     }
     catch (error) {

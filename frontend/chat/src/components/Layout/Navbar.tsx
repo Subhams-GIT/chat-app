@@ -1,6 +1,6 @@
 import Logo from "../../assets/chat-Logo.png";
 import {useSelector} from "react-redux";
-import {AuthState, chat} from "@/Context/AuthContext";
+import {AuthState} from "@/Context/AuthContext";
 import { CircleUserIcon, MenuIcon, SearchCheckIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 const Navbar = () => {
@@ -22,7 +22,7 @@ const Navbar = () => {
 
 
   return (
-	 <nav className="w-full bg-white py-1 flex justify-center items-center">
+	 <nav className="w-full bg-white py-1 flex justify-center items-center static">
   <div className="w-full max-w-5xl  flex flex-row  md:flex-row items-center bg-black rounded-md justify-between px-2 sm:px-4 gap-2 md:gap-10 h-auto md:h-14 mx-4">
     {/* Logo */}
     <div className="flex items-center gap-2  md:mb-0">
@@ -44,7 +44,7 @@ const Navbar = () => {
 		width>768?(
 			<div className="flex items-center gap-2 hover:cursor-pointer">
       		<CircleUserIcon className="text-white h-6 w-6" />
-      		<span className="text-white text-sm truncate max-w-[100px] md:max-w-none">{userdetails.email || "Guest"}</span>
+      		<span className="text-white text-sm truncate max-w-[100px] md:max-w-none">{userdetails.displayName || "Guest"}</span>
     		</div>
 		):(
 			<MenuIcon className="text-white"/>

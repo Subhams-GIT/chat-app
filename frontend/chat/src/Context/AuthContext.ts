@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { PayloadAction } from "@reduxjs/toolkit";
-import { ActivityIcon } from "lucide-react";
+
 
 export type AuthState = {
 	id: number | null,

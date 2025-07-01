@@ -16,7 +16,6 @@ const verifyCodeHandler = (req, res) => __awaiter(void 0, void 0, void 0, functi
         const { code } = req.body;
         const username = req.query.username;
         console.log(username);
-        // 1) Find the user
         const user = yield prisma.user.findFirst({
             where: { displayName: username },
         });

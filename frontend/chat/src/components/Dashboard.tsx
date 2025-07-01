@@ -20,7 +20,7 @@ const Dashboard = () => {
         dispatch(setUser(userRes.user))
          const chatsRes = await GetChats();
          console.log(chatsRes ,'chats')
-         dispatch(setchats(chatsRes.data));
+         dispatch(setchats(chatsRes.data.chats));
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -39,7 +39,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div>
+    <div className="h-full w-full overflow-hidden">
       <Navbar />
       <Chats/>
     </div>

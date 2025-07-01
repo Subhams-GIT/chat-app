@@ -8,7 +8,7 @@ const  verifyCodeHandler = async (req: Request, res: Response) :Promise<void>=> 
     const {  code } = req.body as { code: number };
     const username=req.query.username as string
     console.log(username)
-    // 1) Find the user
+   
     const user = await prisma.user.findFirst({
       where: { displayName:username },
     });

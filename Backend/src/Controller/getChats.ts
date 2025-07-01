@@ -1,76 +1,54 @@
 import { Request, Response } from "express";
 import prisma from "../db";
 
-interface Ids {
-    id: number
-}
 export default async (req: Request, res: Response) => {
     const userid = req.session.user?.id
 
     try {
-        const user = await prisma.user.findFirst({
-            where: {
-                id: Number(userid)
-            }
-        })
 
-        const conversation = await prisma.conversation.findMany({
+
+        const conversations = await prisma.conversation.findMany({
             where: {
                 participants: {
-                    some: {
-                        userId: Number(userid)
-                    }
-                }
+                    some: { userId: Number(userid) },
+                },
             },
             include: {
-                participants:{
-                    include:{
-                        user:{
-                            select:{
-                                id:true,
-                                displayName:true,
-                                profileImage:true
-                            }
-                        }
+                participants: {
+                    include: {
+                        user: true
                     }
                 },
                 messages: {
-                    orderBy:{
-                        sentAt:'desc'
-                    },
-                    take:1
+                    orderBy: { sentAt: 'desc' }
                 }
-            }
-        })
+            },
 
-        const friendIds = conversation
-            .flatMap(c =>
-                c.participants
-                    .filter(p => p.userId !== Number(userid))
-                    .map(p => p.userId)
-            );
+        });
 
-        console.log('friends Ids', friendIds);
-        let names:string[]=[];
-        friendIds.map(f=>{
-            prisma.user.findFirst({
-                where:{
-                    id:f
-                }
-            }).then(data=>{
-                names.push(data?.displayName as string);
-                return data?.displayName
-            })
-            console.log('names',names);
+        const chats = conversations.map(convo => {
+            const friend = convo.participants.find(p => p.userId !== Number(userid))?.user;
+
+            const messages = convo.messages.map(msg => {
+                const sender = convo.participants.find(p => p.userId === msg.senderId)?.user;
+                return {
+                    content: msg.content,
+                    sentAt: msg.sentAt,
+                    senderId: msg.senderId,
+                    senderName: sender?.displayName || 'Unknown',
+                };
+            });
+
+            return {
+                friend,
+                messages,
+            };
         })
-        const msgs = conversation.map(c => {
-            c.messages.some(m => m.senderId && m.content)
-        })
-        console.log(msgs);
-        // const chats=await prisma.p
         res.json({
-            conversation
-        })
+            chats
+        });
+
+
     } catch (error) {
         console.log(error)
         res.json({
@@ -80,3 +58,4 @@ export default async (req: Request, res: Response) => {
     }
 
 }
+
