@@ -3,7 +3,9 @@ import {useSelector} from "react-redux";
 import {AuthState} from "@/Context/AuthContext";
 import { CircleUserIcon, MenuIcon, SearchCheckIcon } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 const Navbar = () => {
+  const nav=useNavigate();
   const user: any = useSelector((state) => state) as AuthState;
   const [width,setwidth]=useState(window.innerWidth)
   const userdetails=user.Authreducers
@@ -43,7 +45,7 @@ const Navbar = () => {
 	{
 		width>768?(
 			<div className="flex items-center gap-2 hover:cursor-pointer">
-      		<CircleUserIcon className="text-white h-6 w-6" />
+      		<CircleUserIcon className="text-white h-6 w-6" onClick={()=>nav('/profile')}/>
       		<span className="text-white text-sm truncate max-w-[100px] md:max-w-none">{userdetails.displayName || "Guest"}</span>
     		</div>
 		):(

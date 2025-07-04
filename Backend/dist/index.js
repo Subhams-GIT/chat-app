@@ -17,7 +17,6 @@ const ws_1 = require("ws");
 const cors_1 = __importDefault(require("cors"));
 const express_rate_limit_1 = __importDefault(require("express-rate-limit"));
 const cloudinary_1 = __importDefault(require("cloudinary"));
-const express_fileupload_1 = __importDefault(require("express-fileupload"));
 const upload_1 = __importDefault(require("./Routes/upload"));
 const Verify_1 = __importDefault(require("./Routes/Verify"));
 const getChats_1 = __importDefault(require("./Routes/getChats"));
@@ -37,7 +36,6 @@ const limiter = (0, express_rate_limit_1.default)({
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
-app.use((0, express_fileupload_1.default)());
 app.use((0, cors_1.default)({
     origin: 'http://localhost:5173',
     credentials: true

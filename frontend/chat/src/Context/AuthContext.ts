@@ -9,22 +9,26 @@ export type AuthState = {
 	profileImage: string,
 
 }
+
 export type message = {
 	id: number,
 	conversationid: number,
 	senderId: number,
 	content: string
 }
+
 export type participant = {
 	userId: number,
 	conversationId: number
 }
+
 export type chat = {
 	conversationid: number,
 	name: string,
 	messages: message[],
 	participants: participant[]
 }
+
 const initialState: AuthState = {
 	id:null,
 	displayName:"",

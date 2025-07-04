@@ -1,29 +1,31 @@
-import upload from '../Routes/upload';
+// import upload from '../Routes/upload';
 import { v2 as cloudinary } from 'cloudinary';
-import streamifier from 'streamifier';
-import { Request } from 'express';
+import prisma from '../db';
+import { Request, Response } from 'express';
 
 
 
-export function UploadImge(req:Request,res:any){
-    try {
-    if (!req.file) {
-      return res.status(400).json({ error: 'No file uploaded.' });
+export async function UploadImge(req: Request, res: Response): Promise<void> {
+  const user=req.session.user;
+  const profileImage=req.file?.buffer;
+ 
+  prisma?.user.update({
+    where:{
+      id:Number(user?.id)
+    },
+    data:{
+      profileImage
     }
-
-   
-    const stream = cloudinary.uploader.upload_stream(
-      { folder: 'my-app-uploads' },
-      (error, result) => {
-        if (error) return res.status(500).json({ error: error.message });
-        return res.json({ public_id: result?.public_id, url: result?.secure_url });
-      }
-    );
-
-    streamifier.createReadStream(req.file.buffer).pipe(stream);
-
-  } catch (err: any) {
-    console.error('Upload error:', err);
-    res.status(500).json({ error: 'Upload failed.' });
-  }
+  }).then(d=>{
+    res.status(200).json({
+      success:true,
+      msg:"image uploaded sucessfully",
+    })
+  }).catch(c=>{
+    console.log(c);
+    res.status(500).json({
+      success:false,
+      msg:"error occured",
+    })
+  })
 } 

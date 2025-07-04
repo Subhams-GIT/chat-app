@@ -12,26 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = ForgotPassword;
-const db_1 = require("../db");
-const db_2 = __importDefault(require("../db"));
-const bcryptjs_1 = __importDefault(require("bcryptjs"));
-const zod_1 = __importDefault(require("zod"));
+const db_1 = __importDefault(require("../db"));
 const resend_1 = require("resend");
 const resend = new resend_1.Resend(process.env.RESEND_KEY);
-function ForgotPassword(req, res) {
+function getPasswordLink(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        yield (0, db_1.DbConnect)();
-        const { email, password } = req.body;
-        const PasswordScehma = zod_1.default.object({
-            password: zod_1.default
-                .string()
-                .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/)
-                .min(8),
-        });
-        if (!PasswordScehma.safeParse(password).success) {
-            res.status(400).json('choose a  suitable password');
-        }
+        const { email, code } = req.body;
         const code = Math.floor(Math.random() * 999999);
         const { data, error } = yield resend.emails.send({
             from: "Acme <onboarding@resend.dev>",
@@ -41,7 +27,7 @@ function ForgotPassword(req, res) {
         });
         if (data) {
             try {
-                const updates = yield db_2.default.user.update({
+                const updates = yield db_1.default.user.update({
                     where: {
                         email
                     },
@@ -50,28 +36,16 @@ function ForgotPassword(req, res) {
                     }
                 });
                 if (updates) {
-                    updates.verifyCode == code;
-                    const hashedPassword = yield bcryptjs_1.default.hash(password, 10);
-                    const response = yield db_2.default.user.update({
-                        where: {
-                            email
-                        },
-                        data: {
-                            password: hashedPassword
-                        }
-                    });
-                    if (response) {
-                        res.json({
+                    if (updates.verifyCode === code) {
+                        res.status(200).json({
                             success: true,
-                            message: "password changed",
+                            msg: "verification email send sucessfully"
                         });
                     }
                 }
             }
-            catch (error) {
+            finally {
             }
-        }
-        else {
         }
     });
 }

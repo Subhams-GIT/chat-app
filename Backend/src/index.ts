@@ -33,7 +33,7 @@ const limiter = rateLimit({
 	standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
 	legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 })
-app.use(fileupload())
+
 app.use(cors({
   origin:'http://localhost:5173',
   credentials:true
